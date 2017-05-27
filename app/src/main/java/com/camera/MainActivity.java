@@ -22,6 +22,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -62,23 +63,14 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             @Override
             public void onClick(View v) {
                 try {
-                    Camera.Parameters parameters = mcamera.getParameters();//打开闪光灯
-                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+                    Camera.Parameters parameters = mcamera.getParameters();
+                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);//自动识别打开闪光灯
                     // 设置对焦方式，这里设置自动对焦
                     parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
                     mcamera2.setParameters(parameters);
                     mcamera2.takePicture(shutterCallback, null, jpeg);
 
                     mcamera.takePicture(shutterCallback, null, jpeg);
-                    SystemClock.sleep(500);
-//                    mcamera2.stopPreview();
-                    mcamera2.startPreview();
-//                    mcamera.stopPreview();
-                    mcamera.startPreview();
-
-//                    SystemClock.sleep(1000);
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -130,11 +122,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         });
         this.mSurfaceHolderBack.setType(3);
         sfvFront = (SurfaceView) findViewById(R.id.sv_mini);
-//        sfvBack.setZOrderOnTop(false);
         //这两个方法差不多，设置了就会浮现到顶部，但是，后面的看不见，要像下面设置为透明
         sfvFront.setZOrderOnTop(true);
         sfvFront.setZOrderMediaOverlay(true);
         mSurfaceHolderFront = sfvFront.getHolder();
+        //设置透明
         mSurfaceHolderFront.setFormat(PixelFormat.TRANSPARENT);
         mSurfaceHolderBack.setFormat(PixelFormat.TRANSPARENT);
 
@@ -148,9 +140,12 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 }
                 mcamera = Camera.open(1);//前置
                 mcamera.setDisplayOrientation(270);
+                mcamera.setFaceDetectionListener(faceDetectionListener);
+
                 try {
                     mcamera.setPreviewDisplay(mSurfaceHolderFront);
                     mcamera.startPreview();
+                    mcamera.startFaceDetection();
                     return;
                 } catch (IOException localIOException) {
                     localIOException.printStackTrace();
@@ -184,6 +179,16 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         });
         this.mSurfaceHolderFront.setType(3);
     }
+
+    Camera.FaceDetectionListener faceDetectionListener = new Camera.FaceDetectionListener() {
+        @Override
+        public void onFaceDetection(Camera.Face[] faces, Camera camera) {
+            if (faces.length > 0) {
+                Toast.makeText(MainActivity.this, "识别成功", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    };
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
@@ -279,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         }
     };
 
-
+    int i = 0;
     //创建jpeg图片回调数据对象
     Camera.PictureCallback jpeg = new Camera.PictureCallback() {
         @Override
@@ -313,8 +318,15 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             }
             // 最后通知图库更新
             MainActivity.this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + path)));
-//            mcamera2.cancelAutoFocus(); //这一句很关键
-//            mcamera.cancelAutoFocus(); //这一句很关键
+
+            if (i == 1) {
+                mcamera2.stopPreview();
+                mcamera2.startPreview();
+                mcamera.stopPreview();
+                mcamera.startPreview();
+            } else {
+                i += 1;
+            }
 
         }
     };
