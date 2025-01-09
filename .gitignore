@@ -7,3 +7,14 @@
 /build
 /captures
 .externalNativeBuild
+/.idea/caches/deviceStreaming.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/markdown-navigator/profiles_settings.xml
+/.idea/checkstyle-idea.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/jarRepositories.xml
+/.idea/migrations.xml
+/.idea/runConfigurations.xml
+/app/release/app-release.apk
+/app/release/output-metadata.json
+/app/CameraBackFront_20210618.apk

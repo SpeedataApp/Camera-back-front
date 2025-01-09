@@ -1,5 +1,7 @@
 package com.camera;
 
+import static android.R.attr.path;
+
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -29,8 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-
-import static android.R.attr.path;
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
     public static final String TAG = "TAG";
@@ -159,7 +159,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 SystemClock.sleep(500);
                 Camera.Parameters params = mcamera.getParameters();
                 params.setPictureFormat(PixelFormat.JPEG);
-                params.setPreviewSize(640, 480);
+                //params.setPreviewSize(640, 480);
+                params.setPreviewSize(1280, 720);
                 // 设置预览照片时每秒显示多少帧的最小值和最大值
                 params.setPreviewFpsRange(4, 10);
                 // 设置图片格式
